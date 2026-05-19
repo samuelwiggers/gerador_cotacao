@@ -7,9 +7,7 @@ function addSeg(){
     div.className = 'seg';
     div.innerHTML = `
         <input class="nome" placeholder="Seguradora">
-        <input class="plano" placeholder="Plano">
         <input class="valor" placeholder="Valor">
-        <input class="franquia" placeholder="Franquia">
     `;
 
     document.getElementById('segs').appendChild(div);
