@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Cotação</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="panel">
+            <h2>Gerador de Cotação</h2>
+
+            <input
+                type="file"
+                id="logoInput"
+                accept="image/*"
+            >
+            <input
+                type="text"
+                id="cliente"
+                placeholder="Nome do cliente"
+            >
+            <textarea id="mensagem" placeholder="Mensagem adicional"></textarea>
+            <div id="segs"></div>
+
+            <button onclick="addSeg()">+ Adicionar Seguradora</button>
+            <button onclick="baixar()">Baixar Imagem</button>
+        </div>
+
+        <div class="preview">
+
+            <div class="quote" id="quote">
+                <div class="logo">
+                    <img id="logoPreview">
+                </div>
+
+                <div class="content">
+                    <h1>Cotação de Seguro</h1>
+
+                    <p>Olá, <strong id="clientePreview">Cliente</strong>👋</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Seguradora</th>
+                                <th>Valor</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tbody"></tbody>
+                    </table>
+
+                    <p id="mensagemPreview"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="scripts.js"></script>
+</html>
