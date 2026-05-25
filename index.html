@@ -24,36 +24,90 @@
                 placeholder="Nome do cliente"
             >
             <textarea id="mensagem" placeholder="Mensagem adicional"></textarea>
+
+            <h3 class="panel-section">Dados do Seguro/Cobertura</h3>
+            <div id="coberturas"></div>
+            <button type="button" class="btn-secondary" onclick="addCobertura()">+ Adicionar Cobertura</button>
+
+            <input type="text" id="classeBonus" placeholder="Classe de Bônus">
+            <input type="text" id="renovaApolice" placeholder="Renova Apólice nº/Cia">
+            <input type="text" id="vigencia" placeholder="Vigência">
+
+            <h3 class="panel-section">Seguradoras</h3>
             <div id="segs"></div>
 
             <button onclick="addSeg()">+ Adicionar Seguradora</button>
-            <button onclick="baixar()">Baixar Imagem</button>
+            <input
+                type="text"
+                id="melhorValor"
+                placeholder="Menor valor"
+            >
+            <button onclick="baixar()">Baixar Imagens (2 páginas)</button>
         </div>
 
         <div class="preview">
+            <div class="preview-pages">
+                <p class="page-indicator">Página 1 — Coberturas</p>
 
-            <div class="quote" id="quote">
-                <div class="logo">
-                    <img id="logoPreview">
+                <div class="quote" id="quotePagina1">
+                    <div class="logo">
+                        <img class="logo-preview" src="logo.png" alt="">
+                    </div>
+
+                    <div class="content">
+                        <h1>Cotação de Seguro</h1>
+
+                        <p>Olá, <strong class="cliente-preview">Cliente</strong>👋</p>
+
+                        <p class="mensagem-preview"></p>
+
+                        <div class="section-block">
+                            <h2 class="section-title">DADOS DO SEGURO/COBERTURA</h2>
+
+                            <table class="table-coberturas">
+                                <thead>
+                                    <tr>
+                                        <th>Coberturas Contratadas</th>
+                                        <th>LMI (R$)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="coberturasPreview"></tbody>
+                            </table>
+
+                            <div class="meta-seguro" id="metaSeguroPreview" hidden>
+                                <span id="classeBonusPreview"></span>
+                                <span id="renovaApolicePreview"></span>
+                                <span id="vigenciaPreview"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="content">
-                    <h1>Cotação de Seguro</h1>
+                <p class="page-indicator">Página 2 — Preços</p>
 
-                    <p>Olá, <strong id="clientePreview">Cliente</strong>👋</p>
+                <div class="quote" id="quotePagina2">
+                    <div class="logo">
+                        <img class="logo-preview" src="logo.png" alt="">
+                    </div>
 
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Seguradora</th>
-                                <th>Valor</th>
-                            </tr>
-                        </thead>
+                    <div class="content">
+                        <h1>Comparativo de Preços</h1>
 
-                        <tbody id="tbody"></tbody>
-                    </table>
+                        <p>Olá, <strong class="cliente-preview">Cliente</strong>👋</p>
 
-                    <p id="mensagemPreview"></p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Seguradora</th>
+                                    <th>Valor</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tbody"></tbody>
+                        </table>
+
+                        <p class="melhor-preview"></p>
+                    </div>
                 </div>
             </div>
         </div>
