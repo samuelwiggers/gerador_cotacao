@@ -8,21 +8,6 @@ const SEGURADORAS_PADRAO = [
     'Allianz seguros'
 ];
 
-const COBERTURAS_PADRAO = [
-    'BASICA - 01-COMPREENSIVA',
-    'RESP CIVIL FACULTATIVA VEÍCULOS - DANOS MATERIAIS',
-    'RESP CIVIL FACULTATIVA VEÍCULOS - DANOS CORPORAIS',
-    'RESP CIVIL FACULTATIVA VEÍCULOS - DANOS MORAIS E ESTÉTICOS',
-    'ACIDENTES PESSOAIS PASSAGEIROS - LMI POR PASSAGEIRO - MORTE',
-    'ACIDENTES PESSOAIS PASSAGEIROS - LMI POR PASSAGEIRO - INVALIDEZ PERMANENTE',
-    'CARTA VERDE - DANOS MATERIAIS',
-    'CARTA VERDE - MORTE E/OU DANOS PESSOAIS',
-    'CARRO RESERVA - 15 DIAS BÁSICO',
-    'ASSISTENCIA - SUPERIOR',
-    'PROTECAO PEQUENOS REPAROS',
-    'VIDROS - SUPERIOR'
-];
-
 let count = 0;
 
 function formatMoeda(valor) {
@@ -41,11 +26,13 @@ function aplicarMascaraValor(input) {
     input.value = digits ? formatMoeda(parseInt(digits, 10) / 100) : 'R$ ';
 }
 
-function aplicarMascaraLmi(input) {
-    if (/[a-zA-Z]/.test(input.value)) return;
-
+function aplicarMascaraNumero(input) {
     const digits = input.value.replace(/\D/g, '');
     input.value = digits ? formatNumeroBR(parseInt(digits, 10) / 100) : '';
+}
+
+function aplicarMascaraDias(input) {
+    input.value = input.value.replace(/\D/g, '');
 }
 
 function valorFormatado(texto) {
@@ -54,28 +41,57 @@ function valorFormatado(texto) {
     return formatMoeda(valor);
 }
 
-function lmiFormatado(texto) {
+function numeroFormatado(texto) {
     if (!texto?.trim()) return '';
-
     const valor = parseValor(texto);
     if (valor === null) return texto.trim();
-
     return formatNumeroBR(valor);
 }
 
-function addCobertura(nome = '', lmi = '') {
-    const div = document.createElement('div');
+function parseValor(texto) {
+    if (!texto?.trim()) return null;
 
-    div.className = 'cobertura';
-    div.innerHTML = `
-        <input class="cob-nome" placeholder="Cobertura" value="${nome}">
-        <input class="cob-lmi" placeholder="LMI (R$)" value="${lmi}">
-    `;
+    const limpo = texto.replace(/[^\d,.-]/g, '').trim();
+    if (!limpo) return null;
 
-    document.getElementById('coberturas').appendChild(div);
+    const valor = limpo.includes(',')
+        ? parseFloat(limpo.replace(/\./g, '').replace(',', '.'))
+        : parseFloat(limpo);
 
-    addEvents();
-    update();
+    return Number.isFinite(valor) ? valor : null;
+}
+
+function setPreviewValor(id, texto) {
+    const el = document.getElementById(id);
+    const formatado = numeroFormatado(texto);
+
+    el.textContent = formatado ? `${formatado} ` : '';
+}
+
+function updatePaginaCoberturas() {
+    const seguradoraDestaque = document.getElementById('seguradoraDestaque').value.trim();
+
+    document.getElementById('seguradoraDestaquePreview').textContent =
+        seguradoraDestaque || 'Bradesco seguros';
+
+    setPreviewValor('danosCorporaisPreview', document.getElementById('danosCorporais').value);
+    setPreviewValor('danosMateriaisPreview', document.getElementById('danosMateriais').value);
+    setPreviewValor('passageirosPreview', document.getElementById('passageiros').value);
+
+    const dias = document.getElementById('carroReservaDias').value.trim();
+    document.getElementById('carroReservaPreview').textContent = dias ? `${dias} ` : '';
+
+    setPreviewValor('franquiaPreview', document.getElementById('franquia').value);
+
+    const seguradoraCotacao = document.getElementById('seguradoraCotacao').value.trim();
+    document.getElementById('seguradoraCotacaoPreview').textContent =
+        seguradoraCotacao ? `${seguradoraCotacao} ` : '';
+
+    const valorCotacao = valorFormatado(document.getElementById('valorCotacao').value);
+    const valorEl = document.getElementById('valorCotacaoPreview');
+    valorEl.textContent = parseValor(document.getElementById('valorCotacao').value) !== null
+        ? valorCotacao.replace('R$', '').trim()
+        : '';
 }
 
 function addSeg(nome = '') {
@@ -95,40 +111,30 @@ function addSeg(nome = '') {
 }
 
 function addEvents() {
-    document.querySelectorAll('input:not(.valor):not(.cob-nome):not(.cob-lmi), textarea').forEach(el => {
+    document.querySelectorAll('input:not(.valor):not(.num-cobertura):not(.valor-cotacao):not(.num-dias), textarea').forEach(el => {
         el.oninput = update;
     });
 
-    document.querySelectorAll('.cob-nome').forEach(el => {
-        el.oninput = update;
-    });
-
-    document.querySelectorAll('.cob-lmi').forEach(el => {
+    document.querySelectorAll('.num-cobertura').forEach(el => {
         el.oninput = (e) => {
-            aplicarMascaraLmi(e.target);
+            aplicarMascaraNumero(e.target);
             update();
         };
     });
 
-    document.querySelectorAll('.valor').forEach(el => {
+    document.querySelectorAll('.num-dias').forEach(el => {
+        el.oninput = (e) => {
+            aplicarMascaraDias(e.target);
+            update();
+        };
+    });
+
+    document.querySelectorAll('.valor-cotacao, .valor').forEach(el => {
         el.oninput = (e) => {
             aplicarMascaraValor(e.target);
             update();
         };
     });
-}
-
-function parseValor(texto) {
-    if (!texto?.trim()) return null;
-
-    const limpo = texto.replace(/[^\d,.-]/g, '').trim();
-    if (!limpo) return null;
-
-    const valor = limpo.includes(',')
-        ? parseFloat(limpo.replace(/\./g, '').replace(',', '.'))
-        : parseFloat(limpo);
-
-    return Number.isFinite(valor) ? valor : null;
 }
 
 function getMelhorSeguradora() {
@@ -156,49 +162,26 @@ function getMelhorSeguradora() {
         }
     }
 
-    return { todosPreenchidos: true, melhorNome };
+    return { todosPreenchidos: true, melhorNome, melhorValor: menor };
 }
 
-function updateMetaSeguro() {
-    const classeBonus = document.getElementById('classeBonus').value.trim();
-    const renovApolice = document.getElementById('renovaApolice').value.trim();
-    const vigencia = document.getElementById('vigencia').value.trim();
-    const metaEl = document.getElementById('metaSeguroPreview');
-    const classeEl = document.getElementById('classeBonusPreview');
-    const renovaEl = document.getElementById('renovaApolicePreview');
-    const vigenciaEl = document.getElementById('vigenciaPreview');
+function aplicarMelhorCotacao({ todosPreenchidos, melhorNome, melhorValor }) {
+    const seguradoraDestaqueInput = document.getElementById('seguradoraDestaque');
+    const seguradoraInput = document.getElementById('seguradoraCotacao');
+    const valorInput = document.getElementById('valorCotacao');
 
-    classeEl.textContent = classeBonus ? `Classe de Bônus: ${classeBonus}` : '';
-    renovaEl.textContent = renovApolice ? `Renova Apólice nº/Cia: ${renovApolice}` : '';
-    vigenciaEl.textContent = vigencia ? `Vigência: ${vigencia}` : '';
+    if (!todosPreenchidos || !melhorNome || melhorValor === null) return;
 
-    classeEl.hidden = !classeBonus;
-    renovaEl.hidden = !renovApolice;
-    vigenciaEl.hidden = !vigencia;
-    metaEl.hidden = !classeBonus && !renovApolice && !vigencia;
-}
+    if (document.activeElement !== seguradoraDestaqueInput) {
+        seguradoraDestaqueInput.value = melhorNome;
+    }
 
-function updateCoberturas() {
-    const tbody = document.getElementById('coberturasPreview');
-    const nomes = document.querySelectorAll('.cob-nome');
-    const lmis = document.querySelectorAll('.cob-lmi');
+    if (document.activeElement !== seguradoraInput) {
+        seguradoraInput.value = melhorNome;
+    }
 
-    tbody.innerHTML = '';
-
-    for (let i = 0; i < nomes.length; i++) {
-        const nome = nomes[i].value.trim();
-        const lmi = lmis[i].value.trim();
-
-        if (!nome && !lmi) continue;
-
-        const tr = document.createElement('tr');
-
-        tr.innerHTML = `
-            <td>${nome}</td>
-            <td>${lmiFormatado(lmis[i].value)}</td>
-        `;
-
-        tbody.appendChild(tr);
+    if (document.activeElement !== valorInput) {
+        valorInput.value = formatMoeda(melhorValor);
     }
 }
 
@@ -215,11 +198,7 @@ function update() {
         el.hidden = !mensagem.trim();
     });
 
-    updateCoberturas();
-    updateMetaSeguro();
-
     const tbody = document.getElementById('tbody');
-    const melhorInput = document.getElementById('melhorValor');
 
     tbody.innerHTML = '';
     tbody.style = 'text-align: center';
@@ -251,40 +230,24 @@ function update() {
         tbody.appendChild(tr);
     }
 
-    const { todosPreenchidos, melhorNome } = getMelhorSeguradora();
+    const resultado = getMelhorSeguradora();
 
-    if (document.activeElement !== melhorInput) {
-        if (todosPreenchidos && melhorNome) {
-            melhorInput.value = `Menor valor encontrado: ${melhorNome}`;
-        } else {
-            melhorInput.value = '';
-        }
-    }
-
-    document.querySelectorAll('.melhor-preview').forEach(el => {
-        el.textContent = melhorInput.value;
-        el.hidden = !melhorInput.value.trim();
-    });
+    aplicarMelhorCotacao(resultado);
+    updatePaginaCoberturas();
 }
 
-document
-    .getElementById('logoInput')
-    .addEventListener(
-        'change',
-        function (e) {
-            const file = e.target.files[0];
-            const reader = new FileReader();
+document.getElementById('logoInput').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
 
-            reader.onload =
-                function (event) {
-                    document.querySelectorAll('.logo-preview').forEach(img => {
-                        img.src = event.target.result;
-                    });
-                };
+    reader.onload = function (event) {
+        document.querySelectorAll('.logo-preview').forEach(img => {
+            img.src = event.target.result;
+        });
+    };
 
-            reader.readAsDataURL(file);
-        }
-    );
+    reader.readAsDataURL(file);
+});
 
 async function baixar() {
     const paginas = document.querySelectorAll('.quote');
@@ -295,12 +258,12 @@ async function baixar() {
                 scale: 2,
                 useCORS: true,
                 allowTaint: true,
-                backgroundColor: "#ffffff"
+                backgroundColor: '#ffffff'
             });
 
             const link = document.createElement('a');
 
-            link.href = canvas.toDataURL("image/png");
+            link.href = canvas.toDataURL('image/png');
             link.download = `cotacao-pagina-${i + 1}.png`;
             link.click();
 
@@ -315,4 +278,5 @@ async function baixar() {
 }
 
 SEGURADORAS_PADRAO.forEach(nome => addSeg(nome));
-COBERTURAS_PADRAO.forEach(nome => addCobertura(nome));
+addEvents();
+update();

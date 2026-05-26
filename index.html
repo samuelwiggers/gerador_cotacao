@@ -13,35 +13,40 @@
         <div class="panel">
             <h2>Gerador de Cotação</h2>
 
-            <input
-                type="file"
-                id="logoInput"
-                accept="image/*"
-            >
-            <input
-                type="text"
-                id="cliente"
-                placeholder="Nome do cliente"
-            >
-            <textarea id="mensagem" placeholder="Mensagem adicional"></textarea>
+            <input type="file" id="logoInput" accept="image/*" disabled>
+            <input type="text" id="cliente" placeholder="Nome do cliente">
+            <textarea id="mensagem" placeholder="Mensagem adicional (página 2)"></textarea>
 
             <h3 class="panel-section">Dados do Seguro/Cobertura</h3>
-            <div id="coberturas"></div>
-            <button type="button" class="btn-secondary" onclick="addCobertura()">+ Adicionar Cobertura</button>
 
-            <input type="text" id="classeBonus" placeholder="Classe de Bônus">
-            <input type="text" id="renovaApolice" placeholder="Renova Apólice nº/Cia">
-            <input type="text" id="vigencia" placeholder="Vigência">
+            <label class="field-label">Seguradora no texto de abertura</label>
+            <input type="text" id="seguradoraDestaque" placeholder="Ex: Bradesco seguros">
+
+            <label class="field-label">Danos corporais a terceiros</label>
+            <input type="text" id="danosCorporais" class="num-cobertura" placeholder="0,00">
+
+            <label class="field-label">Danos materiais a terceiros</label>
+            <input type="text" id="danosMateriais" class="num-cobertura" placeholder="0,00">
+
+            <label class="field-label">Seguro de passageiros</label>
+            <input type="text" id="passageiros" class="num-cobertura" placeholder="0,00">
+
+            <label class="field-label">Carro reserva (dias)</label>
+            <input type="text" id="carroReservaDias" class="num-dias" placeholder="Ex: 15">
+
+            <label class="field-label">Franquia reduzida</label>
+            <input type="text" id="franquia" class="num-cobertura" placeholder="0,00">
+
+            <label class="field-label">Seguradora (linha final)</label>
+            <input type="text" id="seguradoraCotacao" placeholder="Ex: Allianz seguros">
+
+            <label class="field-label">Valor da cotação (linha final)</label>
+            <input type="text" id="valorCotacao" class="valor-cotacao" placeholder="R$ 0,00" value="R$ ">
 
             <h3 class="panel-section">Seguradoras</h3>
             <div id="segs"></div>
 
             <button onclick="addSeg()">+ Adicionar Seguradora</button>
-            <input
-                type="text"
-                id="melhorValor"
-                placeholder="Menor valor"
-            >
             <button onclick="baixar()">Baixar Imagens (2 páginas)</button>
         </div>
 
@@ -54,32 +59,30 @@
                         <img class="logo-preview" src="logo.png" alt="">
                     </div>
 
-                    <div class="content">
-                        <h1>Cotação de Seguro</h1>
+                    <div class="content content-coberturas">
+                        <p class="texto-apresentacao">
+                            Olá <strong class="cliente-preview">Cliente</strong>👋 muito bom dia/boa tarde, seu seguro está vencendo. Sua cotação ficou excelente na
+                            <strong id="seguradoraDestaquePreview">Bradesco seguros</strong>.
+                            Veja abaixo como ficou o seu seguro.
+                        </p>
 
-                        <p>Olá, <strong class="cliente-preview">Cliente</strong>👋</p>
+                        <h2 class="coberturas-titulo">Coberturas gerais</h2>
 
-                        <p class="mensagem-preview"></p>
-
-                        <div class="section-block">
-                            <h2 class="section-title">DADOS DO SEGURO/COBERTURA</h2>
-
-                            <table class="table-coberturas">
-                                <thead>
-                                    <tr>
-                                        <th>Coberturas Contratadas</th>
-                                        <th>LMI (R$)</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="coberturasPreview"></tbody>
-                            </table>
-
-                            <div class="meta-seguro" id="metaSeguroPreview" hidden>
-                                <span id="classeBonusPreview"></span>
-                                <span id="renovaApolicePreview"></span>
-                                <span id="vigenciaPreview"></span>
-                            </div>
-                        </div>
+                        <ul class="lista-coberturas">
+                            <li>100% da Fipe</li>
+                            <li><span class="valor-cob" id="danosCorporaisPreview"></span>Danos corporais a terceiros</li>
+                            <li><span class="valor-cob" id="danosMateriaisPreview"></span>Danos Materiais a terceiros</li>
+                            <li><span class="valor-cob" id="passageirosPreview"></span>Seguro de passageiros</li>
+                            <li>Guincho Sem limite de Km livre</li>
+                            <li>Vidros , Faróis , lanternas e retrovisores</li>
+                            <li>Carro reserva <span class="valor-cob" id="carroReservaPreview"></span> dias</li>
+                            <li>Pequenos reparos</li>
+                            <li>Franquia reduzida R$ <span class="valor-cob" id="franquiaPreview"></span></li>
+                            <li class="linha-final">
+                                <span id="seguradoraCotacaoPreview"></span>
+                                R$ <span class="valor-cob" id="valorCotacaoPreview"></span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
@@ -93,7 +96,7 @@
                     <div class="content">
                         <h1>Comparativo de Preços</h1>
 
-                        <p>Olá, <strong class="cliente-preview">Cliente</strong>👋</p>
+                        <p class="mensagem-preview"></p>
 
                         <table>
                             <thead>
@@ -102,11 +105,8 @@
                                     <th>Valor</th>
                                 </tr>
                             </thead>
-
                             <tbody id="tbody"></tbody>
                         </table>
-
-                        <p class="melhor-preview"></p>
                     </div>
                 </div>
             </div>
