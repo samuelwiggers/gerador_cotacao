@@ -248,6 +248,71 @@ td{
     cursor: wait;
 }
 
+.modal-download{
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(17, 24, 39, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+
+.modal-download[hidden]{
+    display: none;
+}
+
+.modal-download__box{
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    width: min(100%, 420px);
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+}
+
+.modal-download__box h3{
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.modal-download__hint{
+    margin: 0 0 16px;
+    font-size: 14px;
+    color: #4b5563;
+}
+
+.modal-download__lista{
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.modal-download__item{
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-download__item img{
+    width: 100%;
+    border-radius: 8px;
+    display: block;
+}
+
+.modal-download__item button{
+    margin-top: 0;
+}
+
+.modal-download__fechar{
+    margin-top: 0;
+}
+
 @media (min-width: 900px){
     body{
         padding: 20px;

@@ -307,7 +307,7 @@ function preloadImagens(container) {
     }));
 }
 
-async function baixarArquivo(blob, filename) {
+async function salvarArquivo(blob, filename) {
     const file = new File([blob], filename, { type: 'image/png' });
 
     if (navigator.canShare?.({ files: [file] })) {
@@ -315,7 +315,7 @@ async function baixarArquivo(blob, filename) {
             await navigator.share({ files: [file], title: filename });
             return;
         } catch (err) {
-            if (err.name === 'AbortError') throw err;
+            if (err.name === 'AbortError') return;
         }
     }
 
@@ -336,8 +336,91 @@ async function baixarArquivo(blob, filename) {
     document.body.appendChild(link);
     link.click();
     link.remove();
-
     setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function baixarArquivoDireto(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+let modalUrls = [];
+
+function fecharModalDownload() {
+    document.getElementById('modalDownload').hidden = true;
+    document.getElementById('modalDownloadLista').innerHTML = '';
+
+    for (const url of modalUrls) {
+        URL.revokeObjectURL(url);
+    }
+
+    modalUrls = [];
+}
+
+function mostrarModalDownload(arquivos) {
+    const lista = document.getElementById('modalDownloadLista');
+    const modal = document.getElementById('modalDownload');
+
+    lista.innerHTML = '';
+    modalUrls = [];
+
+    for (let i = 0; i < arquivos.length; i++) {
+        const { blob, filename } = arquivos[i];
+        const url = URL.createObjectURL(blob);
+
+        modalUrls.push(url);
+
+        const item = document.createElement('div');
+        item.className = 'modal-download__item';
+
+        const img = document.createElement('img');
+        img.src = url;
+        img.alt = `Página ${i + 1}`;
+
+        const botao = document.createElement('button');
+        botao.type = 'button';
+        botao.textContent = `Salvar página ${i + 1}`;
+        botao.onclick = () => salvarArquivo(blob, filename);
+
+        item.append(img, botao);
+        lista.appendChild(item);
+    }
+
+    modal.hidden = false;
+}
+
+async function entregarArquivos(arquivos) {
+    const files = arquivos.map(({ blob, filename }) =>
+        new File([blob], filename, { type: 'image/png' })
+    );
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.canShare?.({ files })) {
+        try {
+            await navigator.share({ files, title: 'Cotação' });
+            return;
+        } catch (err) {
+            if (err.name === 'AbortError') return;
+        }
+    }
+
+    if (isMobile) {
+        mostrarModalDownload(arquivos);
+        return;
+    }
+
+    for (const { blob, filename } of arquivos) {
+        baixarArquivoDireto(blob, filename);
+        await new Promise(resolve => setTimeout(resolve, 400));
+    }
 }
 
 async function capturarPagina(pagina) {
@@ -372,7 +455,11 @@ async function baixar() {
     botao.textContent = 'Gerando imagens...';
 
     try {
+        const arquivos = [];
+
         for (let i = 0; i < paginas.length; i++) {
+            botao.textContent = `Gerando página ${i + 1}/${paginas.length}...`;
+
             const canvas = await capturarPagina(paginas[i]);
             const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
@@ -380,12 +467,13 @@ async function baixar() {
                 throw new Error('Falha ao gerar imagem');
             }
 
-            await baixarArquivo(blob, `cotacao-pagina-${i + 1}.png`);
-
-            if (i < paginas.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 600));
-            }
+            arquivos.push({
+                blob,
+                filename: `cotacao-pagina-${i + 1}.png`
+            });
         }
+
+        await entregarArquivos(arquivos);
     } catch (err) {
         console.error(err);
         alert(err.name === 'AbortError' ? 'Download cancelado' : 'Erro ao gerar imagem');
