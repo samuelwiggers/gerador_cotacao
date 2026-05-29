@@ -8,7 +8,48 @@ const SEGURADORAS_PADRAO = [
     'Allianz seguros'
 ];
 
+const LOGOS_SEGURADORAS = [
+    { keys: ['yelum'], path: 'logos/yelum-seguros.png' },
+    { keys: ['hdi'], path: 'logos/hdi-seguros.png' },
+    { keys: ['bradesco'], path: 'logos/bradesco-seguradora-1.png' },
+    { keys: ['porto'], path: 'logos/porto-seguro-novo-logo.png' },
+    { keys: ['azul'], path: 'logos/azul-seguros.png' },
+    { keys: ['allianz'], path: 'logos/allianz-seguros.png' }
+];
+
+function logoSeguradora(nome) {
+    const normalizado = nome.toLowerCase();
+    const entrada = LOGOS_SEGURADORAS.find(({ keys }) =>
+        keys.some(chave => normalizado.includes(chave))
+    );
+
+    return entrada?.path ?? null;
+}
+
+function celulaSeguradora(nome) {
+    const logo = logoSeguradora(nome);
+
+    if (!logo) {
+        return nome;
+    }
+
+    return `
+        <span class="seguradora-celula">
+            <img class="seg-logo" src="${logo}" alt="">
+            <span>${nome}</span>
+        </span>
+    `;
+}
+
 let count = 0;
+
+function preloadLogosSeguradoras() {
+    for (const { path } of LOGOS_SEGURADORAS) {
+        if (!path) continue;
+        const img = new Image();
+        img.src = path;
+    }
+}
 
 function formatMoeda(valor) {
     return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -201,7 +242,6 @@ function update() {
     const tbody = document.getElementById('tbody');
 
     tbody.innerHTML = '';
-    tbody.style = 'text-align: center';
 
     const nomes = document.querySelectorAll('.nome');
     const valores = document.querySelectorAll('.valor');
@@ -223,7 +263,7 @@ function update() {
         const tr = document.createElement('tr');
 
         tr.innerHTML = `
-            <td>${linha.nome}</td>
+            <td>${celulaSeguradora(linha.nome)}</td>
             <td>${valorFormatado(linha.valorTexto)}</td>
         `;
 
@@ -249,34 +289,113 @@ document.getElementById('logoInput').addEventListener('change', function (e) {
     reader.readAsDataURL(file);
 });
 
+const QUOTE_WIDTH = 390;
+const QUOTE_SCALE = 2.5;
+
+function preloadImagens(container) {
+    const imagens = container.querySelectorAll('img');
+
+    return Promise.all([...imagens].map(img => {
+        if (img.complete && img.naturalWidth > 0) {
+            return Promise.resolve();
+        }
+
+        return new Promise(resolve => {
+            img.onload = resolve;
+            img.onerror = resolve;
+        });
+    }));
+}
+
+async function baixarArquivo(blob, filename) {
+    const file = new File([blob], filename, { type: 'image/png' });
+
+    if (navigator.canShare?.({ files: [file] })) {
+        try {
+            await navigator.share({ files: [file], title: filename });
+            return;
+        } catch (err) {
+            if (err.name === 'AbortError') throw err;
+        }
+    }
+
+    const url = URL.createObjectURL(blob);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    if (isIOS) {
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        return;
+    }
+
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = filename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+async function capturarPagina(pagina) {
+    pagina.scrollIntoView({ block: 'center' });
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    await preloadImagens(pagina);
+    await document.fonts?.ready;
+
+    return html2canvas(pagina, {
+        scale: QUOTE_SCALE,
+        width: QUOTE_WIDTH,
+        height: pagina.offsetHeight,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: QUOTE_WIDTH,
+        windowHeight: pagina.offsetHeight
+    });
+}
+
 async function baixar() {
     const paginas = document.querySelectorAll('.quote');
+    const botao = document.querySelector('.btn-download');
+
+    if (!paginas.length) return;
+
+    botao.disabled = true;
+    botao.textContent = 'Gerando imagens...';
 
     try {
         for (let i = 0; i < paginas.length; i++) {
-            const canvas = await html2canvas(paginas[i], {
-                scale: 2,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff'
-            });
+            const canvas = await capturarPagina(paginas[i]);
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
-            const link = document.createElement('a');
+            if (!blob) {
+                throw new Error('Falha ao gerar imagem');
+            }
 
-            link.href = canvas.toDataURL('image/png');
-            link.download = `cotacao-pagina-${i + 1}.png`;
-            link.click();
+            await baixarArquivo(blob, `cotacao-pagina-${i + 1}.png`);
 
             if (i < paginas.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, 400));
+                await new Promise(resolve => setTimeout(resolve, 600));
             }
         }
     } catch (err) {
         console.error(err);
-        alert('Erro ao gerar imagem');
+        alert(err.name === 'AbortError' ? 'Download cancelado' : 'Erro ao gerar imagem');
+    } finally {
+        botao.disabled = false;
+        botao.textContent = 'Baixar Imagens (2 páginas)';
     }
 }
 
 SEGURADORAS_PADRAO.forEach(nome => addSeg(nome));
+preloadLogosSeguradoras();
 addEvents();
 update();
