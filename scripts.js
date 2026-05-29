@@ -10,6 +10,7 @@ const SEGURADORAS_PADRAO = [
 
 const LOGOS_SEGURADORAS = [
     { keys: ['yelum'], path: 'logos/yelum-seguros.png' },
+    { keys: ['mapfre'], path: 'logos/mapfre-seguros.png' },
     { keys: ['hdi'], path: 'logos/hdi-seguros.png' },
     { keys: ['bradesco'], path: 'logos/bradesco-seguradora-1.png' },
     { keys: ['porto'], path: 'logos/porto-seguro-novo-logo.png' },
