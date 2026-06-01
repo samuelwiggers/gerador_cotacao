@@ -5,7 +5,9 @@ const SEGURADORAS_PADRAO = [
     'Bradesco seguros',
     'Porto seguros',
     'Azul seguros',
-    'Allianz seguros'
+    'Allianz seguros',
+    'Zurich seguros',
+    'Tokio Marine seguros',
 ];
 
 const LOGOS_SEGURADORAS = [
@@ -15,7 +17,9 @@ const LOGOS_SEGURADORAS = [
     { keys: ['bradesco'], path: 'logos/bradesco-seguradora-1.png' },
     { keys: ['porto'], path: 'logos/porto-seguro-novo-logo.png' },
     { keys: ['azul'], path: 'logos/azul-seguros.png' },
-    { keys: ['allianz'], path: 'logos/allianz-seguros.png' }
+    { keys: ['allianz'], path: 'logos/allianz-seguros.png' },
+    { keys: ['zurich'], path: 'logos/zurich-seguros.png' },
+    { keys: ['tokio'], path: 'logos/tokio-marine-seguros.png' }
 ];
 
 function logoSeguradora(nome) {

@@ -243,6 +243,12 @@ td{
     flex-shrink: 0;
 }
 
+.seg-logo[src*="bradesco"],
+.seg-logo[src*="tokio"]{
+    width: 55px;
+    height: 55px;
+}
+
 .btn-download:disabled{
     opacity: 0.65;
     cursor: wait;
