@@ -1,5 +1,13 @@
 :root{
     --quote-width: 390px;
+    --dr-bg: #181a1b;
+    --dr-bg-elevated: #212425;
+    --dr-bg-input: #3b3e41;
+    --dr-text: #e8e6e3;
+    --dr-text-muted: #b2aca2;
+    --dr-border: #3e4446;
+    --dr-accent: #2055a0;
+    --dr-selection: #004daa;
 }
 
 *,
@@ -10,10 +18,17 @@
 
 body{
     font-family: Arial, sans-serif;
-    background: #f3f4f6;
+    background: var(--dr-bg);
+    color: var(--dr-text);
     margin: 0;
     padding: 12px;
     -webkit-text-size-adjust: 100%;
+    color-scheme: dark;
+}
+
+::selection{
+    background: var(--dr-selection);
+    color: var(--dr-text);
 }
 
 .container{
@@ -27,10 +42,11 @@ body{
 
 .panel,
 .preview{
-    background: white;
+    background: var(--dr-bg-elevated);
     padding: 20px;
     border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border: 1px solid var(--dr-border);
+    box-shadow: none;
 }
 
 .preview{
@@ -50,7 +66,7 @@ body{
 .page-indicator{
     margin: 0;
     font-size: 13px;
-    color: #6b7280;
+    color: var(--dr-text-muted);
     font-weight: bold;
     width: 100%;
 }
@@ -61,8 +77,15 @@ textarea{
     padding: 10px;
     margin-bottom: 10px;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--dr-border);
+    background: var(--dr-bg-input);
+    color: var(--dr-text);
     box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder{
+    color: var(--dr-text-muted);
 }
 
 button{
@@ -72,13 +95,13 @@ button{
     border-radius: 8px;
     cursor: pointer;
     margin-top: 10px;
-    background: #2563eb;
+    background: var(--dr-accent);
     color: white;
     font-size: 16px;
 }
 
 .seg{
-    border: 1px solid #ddd;
+    border: 1px solid var(--dr-border);
     padding: 10px;
     border-radius: 10px;
     margin-bottom: 10px;
@@ -91,18 +114,20 @@ button{
 .panel-section{
     margin: 16px 0 8px;
     font-size: 15px;
-    color: #374151;
+    color: var(--dr-text);
 }
 
 .field-label{
     display: block;
     font-size: 12px;
-    color: #4b5563;
+    color: var(--dr-text-muted);
     margin-bottom: 4px;
 }
 
 .btn-secondary{
-    background: #6b7280;
+    background: var(--dr-bg-input);
+    color: var(--dr-text);
+    border: 1px solid var(--dr-border);
     margin-top: 0;
     margin-bottom: 10px;
 }
@@ -111,20 +136,22 @@ button{
     width: var(--quote-width);
     min-height: 640px;
     height: auto;
-    background: white;
+    background: var(--dr-bg);
+    color: var(--dr-text);
     position: relative;
     overflow: hidden;
     border-radius: 16px;
     padding: 28px 24px;
     margin: 0;
     flex-shrink: 0;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--dr-border);
+    box-shadow: none;
 }
 
 .content-coberturas{
     font-size: 15px;
     line-height: 1.65;
-    color: #111827;
+    color: var(--dr-text);
 }
 
 .texto-apresentacao{
@@ -180,6 +207,7 @@ button{
 
 .logo img{
     width: 100%;
+    filter: brightness(0.85) contrast(1.15);
 }
 
 .content{
@@ -209,15 +237,16 @@ table{
 }
 
 th{
-    background: rgba(17, 24, 39, 0.55);
-    color: white;
+    background: var(--dr-bg-input);
+    color: var(--dr-text);
     padding: 10px 6px;
     text-align: center;
     font-size: 12px;
 }
 
 td{
-    background: rgba(249, 250, 251, 0.45);
+    background: rgba(59, 62, 65, 0.45);
+    color: var(--dr-text);
     padding: 10px 6px;
     word-break: break-word;
     vertical-align: middle;
@@ -258,7 +287,7 @@ td{
     position: fixed;
     inset: 0;
     z-index: 1000;
-    background: rgba(17, 24, 39, 0.72);
+    background: rgba(24, 26, 27, 0.85);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -270,7 +299,9 @@ td{
 }
 
 .modal-download__box{
-    background: white;
+    background: var(--dr-bg-elevated);
+    color: var(--dr-text);
+    border: 1px solid var(--dr-border);
     border-radius: 16px;
     padding: 20px;
     width: min(100%, 420px);
@@ -286,7 +317,7 @@ td{
 .modal-download__hint{
     margin: 0 0 16px;
     font-size: 14px;
-    color: #4b5563;
+    color: var(--dr-text-muted);
 }
 
 .modal-download__lista{
@@ -297,7 +328,7 @@ td{
 }
 
 .modal-download__item{
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--dr-border);
     border-radius: 12px;
     padding: 12px;
     display: flex;
