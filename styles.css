@@ -3,6 +3,7 @@
     --dr-bg: #181a1b;
     --dr-bg-elevated: #212425;
     --dr-bg-input: #3b3e41;
+    --dr-table-cell: rgba(59, 62, 65, 0.45);
     --dr-text: #e8e6e3;
     --dr-text-muted: #b2aca2;
     --dr-border: #3e4446;
@@ -199,14 +200,18 @@ button{
 .logo{
     position: absolute;
     inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 100%;
+    height: 100%;
     opacity: 0.28;
+    pointer-events: none;
 }
 
 .logo img{
     width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
     filter: brightness(0.85) contrast(1.15);
 }
 
@@ -237,7 +242,7 @@ table{
 }
 
 th{
-    background: var(--dr-bg-input);
+    background: var(--dr-table-cell);
     color: var(--dr-text);
     padding: 10px 6px;
     text-align: center;
@@ -245,7 +250,7 @@ th{
 }
 
 td{
-    background: rgba(59, 62, 65, 0.45);
+    background: var(--dr-table-cell);
     color: var(--dr-text);
     padding: 10px 6px;
     word-break: break-word;
@@ -266,16 +271,16 @@ td{
 }
 
 .seg-logo{
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     object-fit: contain;
     flex-shrink: 0;
+    display: block;
 }
 
-.seg-logo[src*="bradesco"],
 .seg-logo[src*="tokio"]{
-    width: 55px;
-    height: 55px;
+    width: 26px;
+    height: 26px;
 }
 
 .btn-download:disabled{

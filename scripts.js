@@ -14,7 +14,7 @@ const LOGOS_SEGURADORAS = [
     { keys: ['yelum'], path: 'logos/yelum-seguros.png' },
     { keys: ['mapfre'], path: 'logos/mapfre-seguros.png' },
     { keys: ['hdi'], path: 'logos/hdi-seguros.png' },
-    { keys: ['bradesco'], path: 'logos/bradesco-seguradora-1.png' },
+    { keys: ['bradesco'], path: 'logos/bradesco.png' },
     { keys: ['porto'], path: 'logos/porto-seguro-novo-logo.png' },
     { keys: ['azul'], path: 'logos/azul-seguros.png' },
     { keys: ['allianz'], path: 'logos/allianz-seguros.png' },
@@ -435,18 +435,20 @@ async function capturarPagina(pagina) {
     await preloadImagens(pagina);
     await document.fonts?.ready;
 
+    const altura = Math.ceil(pagina.getBoundingClientRect().height);
+
     return html2canvas(pagina, {
         scale: QUOTE_SCALE,
         width: QUOTE_WIDTH,
-        height: pagina.offsetHeight,
+        height: altura,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#181a1b',
         logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: QUOTE_WIDTH,
-        windowHeight: pagina.offsetHeight
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
+        windowWidth: document.documentElement.clientWidth,
+        windowHeight: document.documentElement.clientHeight
     });
 }
 
