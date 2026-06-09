@@ -429,23 +429,42 @@ async function entregarArquivos(arquivos) {
 }
 
 async function capturarPagina(pagina) {
-    pagina.scrollIntoView({ block: 'center', inline: 'center' });
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
     await preloadImagens(pagina);
     await document.fonts?.ready;
 
-    return html2canvas(pagina, {
-        scale: QUOTE_SCALE,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#181a1b',
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: QUOTE_WIDTH,
-        windowHeight: pagina.offsetHeight
-    });
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = [
+        'position:fixed',
+        'left:-10000px',
+        'top:0',
+        `width:${QUOTE_WIDTH}px`,
+        'visibility:hidden',
+        'pointer-events:none'
+    ].join(';');
+
+    const clone = pagina.cloneNode(true);
+    clone.removeAttribute('id');
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    await preloadImagens(clone);
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const altura = clone.offsetHeight;
+
+    try {
+        return await html2canvas(clone, {
+            scale: QUOTE_SCALE,
+            width: QUOTE_WIDTH,
+            height: altura,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#181a1b',
+            logging: false
+        });
+    } finally {
+        wrapper.remove();
+    }
 }
 
 async function baixar() {
