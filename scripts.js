@@ -429,27 +429,24 @@ async function entregarArquivos(arquivos) {
 }
 
 async function capturarPagina(pagina) {
-    pagina.scrollIntoView({ block: 'center', inline: 'nearest' });
+    pagina.scrollIntoView({ block: 'center' });
     await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
     await preloadImagens(pagina);
     await document.fonts?.ready;
 
-    const largura = pagina.offsetWidth;
-    const altura = pagina.offsetHeight;
-
     return html2canvas(pagina, {
         scale: QUOTE_SCALE,
-        width: largura,
-        height: altura,
+        width: QUOTE_WIDTH,
+        height: pagina.offsetHeight,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#181a1b',
         logging: false,
         scrollX: 0,
         scrollY: 0,
-        windowWidth: largura,
-        windowHeight: altura
+        windowWidth: QUOTE_WIDTH,
+        windowHeight: pagina.offsetHeight
     });
 }
 
