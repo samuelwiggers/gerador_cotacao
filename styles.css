@@ -4,8 +4,6 @@
     --dr-bg-elevated: #212425;
     --dr-bg-input: #3b3e41;
     --dr-table-cell: rgba(59, 62, 65, 0.45);
-    --quote-bg: #ffffff;
-    --quote-text: #111827;
     --dr-text: #e8e6e3;
     --dr-text-muted: #b2aca2;
     --dr-border: #3e4446;
@@ -139,22 +137,22 @@ button{
     width: var(--quote-width);
     min-height: 640px;
     height: auto;
-    background: var(--quote-bg);
-    color: var(--quote-text);
+    background: var(--dr-bg);
+    color: var(--dr-text);
     position: relative;
     overflow: hidden;
     border-radius: 16px;
     padding: 28px 24px;
     margin: 0;
     flex-shrink: 0;
-    border: 1px solid var(--quote-bg);
+    border: 1px solid var(--dr-border);
     box-shadow: none;
 }
 
 .content-coberturas{
     font-size: 15px;
     line-height: 1.65;
-    color: var(--quote-text);
+    color: var(--dr-text);
 }
 
 .texto-apresentacao{
@@ -206,7 +204,6 @@ button{
     height: 100%;
     opacity: 0.28;
     pointer-events: none;
-    background: var(--quote-bg);
 }
 
 .logo img{
@@ -247,7 +244,7 @@ table{
 
 th{
     background: var(--dr-table-cell);
-    color: var(--quote-text);
+    color: var(--dr-text);
     padding: 10px 6px;
     text-align: center;
     font-size: 12px;
@@ -255,7 +252,7 @@ th{
 
 td{
     background: var(--dr-table-cell);
-    color: var(--quote-text);
+    color: var(--dr-text);
     padding: 10px 6px;
     word-break: break-word;
     vertical-align: middle;

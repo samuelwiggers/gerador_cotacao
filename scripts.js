@@ -441,7 +441,7 @@ async function capturarPagina(pagina) {
         height: pagina.offsetHeight,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#181a1b',
         logging: false,
         scrollX: 0,
         scrollY: 0,
