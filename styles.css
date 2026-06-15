@@ -347,29 +347,12 @@ td{
 
 .modal-download__item img{
     width: 100%;
-    height: auto;
-    object-fit: contain;
     border-radius: 8px;
     display: block;
 }
 
-.modal-download__item button,
-.modal-download__link{
+.modal-download__item button{
     margin-top: 0;
-}
-
-.modal-download__link{
-    display: block;
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    background: var(--dr-accent);
-    color: white;
-    font-size: 16px;
-    text-align: center;
-    text-decoration: none;
-    box-sizing: border-box;
 }
 
 .modal-download__fechar{

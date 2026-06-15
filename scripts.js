@@ -389,21 +389,13 @@ function mostrarModalDownload(arquivos) {
         const img = document.createElement('img');
         img.src = url;
         img.alt = `Página ${i + 1}`;
-        img.loading = 'eager';
-        img.decoding = 'sync';
-
-        const linkSalvar = document.createElement('a');
-        linkSalvar.href = url;
-        linkSalvar.download = filename;
-        linkSalvar.textContent = `Salvar página ${i + 1}`;
-        linkSalvar.className = 'modal-download__link';
 
         const botao = document.createElement('button');
         botao.type = 'button';
-        botao.textContent = `Compartilhar página ${i + 1}`;
+        botao.textContent = `Salvar página ${i + 1}`;
         botao.onclick = () => salvarArquivo(blob, filename);
 
-        item.append(img, linkSalvar, botao);
+        item.append(img, botao);
         lista.appendChild(item);
     }
 
@@ -411,7 +403,19 @@ function mostrarModalDownload(arquivos) {
 }
 
 async function entregarArquivos(arquivos) {
+    const files = arquivos.map(({ blob, filename }) =>
+        new File([blob], filename, { type: 'image/png' })
+    );
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.canShare?.({ files })) {
+        try {
+            await navigator.share({ files, title: 'Cotação' });
+            return;
+        } catch (err) {
+            if (err.name === 'AbortError') return;
+        }
+    }
 
     if (isMobile) {
         mostrarModalDownload(arquivos);
@@ -424,108 +428,25 @@ async function entregarArquivos(arquivos) {
     }
 }
 
-async function comViewportFixado(callback) {
-    const meta = document.getElementById('viewportMeta');
-    const anterior = meta.getAttribute('content');
-
-    meta.setAttribute(
-        'content',
-        `width=${QUOTE_WIDTH}, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover`
-    );
-
-    window.scrollTo(0, 0);
-    await new Promise(resolve => setTimeout(resolve, 200));
-    await document.fonts?.ready;
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-    try {
-        return await callback();
-    } finally {
-        meta.setAttribute('content', anterior);
-    }
-}
-
-function prepararLogoCaptura(root) {
-    const restaurar = [];
-
-    for (const logoDiv of root.querySelectorAll('.logo')) {
-        const img = logoDiv.querySelector('img');
-
-        if (!img?.src) continue;
-
-        restaurar.push({
-            logoDiv,
-            img,
-            backgroundImage: logoDiv.style.backgroundImage,
-            backgroundSize: logoDiv.style.backgroundSize,
-            backgroundPosition: logoDiv.style.backgroundPosition,
-            backgroundRepeat: logoDiv.style.backgroundRepeat,
-            imgDisplay: img.style.display
-        });
-
-        logoDiv.style.backgroundImage = `url("${img.src}")`;
-        logoDiv.style.backgroundSize = 'cover';
-        logoDiv.style.backgroundPosition = 'center';
-        logoDiv.style.backgroundRepeat = 'no-repeat';
-        img.style.display = 'none';
-    }
-
-    return () => {
-        for (const item of restaurar) {
-            item.logoDiv.style.backgroundImage = item.backgroundImage;
-            item.logoDiv.style.backgroundSize = item.backgroundSize;
-            item.logoDiv.style.backgroundPosition = item.backgroundPosition;
-            item.logoDiv.style.backgroundRepeat = item.backgroundRepeat;
-            item.img.style.display = item.imgDisplay;
-        }
-    };
-}
-
 async function capturarPagina(pagina) {
-    if (typeof htmlToImage === 'undefined') {
-        throw new Error('Biblioteca de captura não carregou. Recarregue a página.');
-    }
+    pagina.scrollIntoView({ block: 'center' });
+    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
 
     await preloadImagens(pagina);
     await document.fonts?.ready;
 
-    return comViewportFixado(async () => {
-        pagina.scrollIntoView({ block: 'start' });
-        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-        const estiloAnterior = pagina.getAttribute('style') || '';
-        pagina.style.width = `${QUOTE_WIDTH}px`;
-        pagina.style.minWidth = `${QUOTE_WIDTH}px`;
-        pagina.style.maxWidth = `${QUOTE_WIDTH}px`;
-        pagina.style.transform = 'none';
-
-        const restaurarLogo = prepararLogoCaptura(pagina);
-
-        try {
-            await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-            const altura = Math.ceil(pagina.scrollHeight);
-
-            return await htmlToImage.toCanvas(pagina, {
-                width: QUOTE_WIDTH,
-                height: altura,
-                pixelRatio: QUOTE_SCALE,
-                canvasWidth: QUOTE_WIDTH,
-                canvasHeight: altura,
-                skipAutoScale: true,
-                cacheBust: true,
-                backgroundColor: '#ffffff',
-                style: {
-                    width: `${QUOTE_WIDTH}px`,
-                    height: `${altura}px`,
-                    transform: 'none',
-                    margin: '0'
-                }
-            });
-        } finally {
-            restaurarLogo();
-            pagina.setAttribute('style', estiloAnterior);
-        }
+    return html2canvas(pagina, {
+        scale: QUOTE_SCALE,
+        width: QUOTE_WIDTH,
+        height: pagina.offsetHeight,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: QUOTE_WIDTH,
+        windowHeight: pagina.offsetHeight
     });
 }
 

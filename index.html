@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" id="viewportMeta">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Gerador de Cotação</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -116,12 +116,12 @@
     <div id="modalDownload" class="modal-download" hidden>
         <div class="modal-download__box">
             <h3>Imagens prontas</h3>
-            <p class="modal-download__hint">Confira a imagem abaixo. Toque em salvar ou pressione a imagem para guardar na galeria.</p>
+            <p class="modal-download__hint">Toque em cada botão para salvar ou compartilhar</p>
             <div id="modalDownloadLista" class="modal-download__lista"></div>
             <button type="button" class="btn-secondary modal-download__fechar" onclick="fecharModalDownload()">Fechar</button>
         </div>
     </div>
 </body>
-<script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
-<script src="scripts.js?v=3"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="scripts.js"></script>
 </html>
