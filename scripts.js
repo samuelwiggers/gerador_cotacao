@@ -428,26 +428,66 @@ async function entregarArquivos(arquivos) {
     }
 }
 
-async function capturarPagina(pagina) {
-    pagina.scrollIntoView({ block: 'center' });
-    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+function criarWrapperCaptura(pagina) {
+    const wrapper = document.createElement('div');
+    const clone = pagina.cloneNode(true);
 
+    wrapper.style.cssText = [
+        'position:fixed',
+        'left:-10000px',
+        'top:0',
+        `width:${QUOTE_WIDTH}px`,
+        'overflow:visible',
+        'pointer-events:none',
+        'z-index:-1'
+    ].join(';');
+
+    clone.style.width = `${QUOTE_WIDTH}px`;
+    clone.style.maxWidth = `${QUOTE_WIDTH}px`;
+    clone.style.minWidth = `${QUOTE_WIDTH}px`;
+    clone.style.flexShrink = '0';
+    clone.style.transform = 'none';
+    clone.style.margin = '0';
+
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    return { wrapper, clone };
+}
+
+async function capturarPagina(pagina) {
     await preloadImagens(pagina);
     await document.fonts?.ready;
 
-    return html2canvas(pagina, {
-        scale: QUOTE_SCALE,
-        width: QUOTE_WIDTH,
-        height: pagina.offsetHeight,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: QUOTE_WIDTH,
-        windowHeight: pagina.offsetHeight
-    });
+    const { wrapper, clone } = criarWrapperCaptura(pagina);
+
+    try {
+        await preloadImagens(clone);
+        await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+        return await html2canvas(clone, {
+            scale: QUOTE_SCALE,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            scrollX: 0,
+            scrollY: 0,
+            onclone: (_, element) => {
+                element.style.width = `${QUOTE_WIDTH}px`;
+                element.style.transform = 'none';
+
+                for (const img of element.querySelectorAll('.logo img')) {
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    img.style.objectPosition = 'center';
+                }
+            }
+        });
+    } finally {
+        wrapper.remove();
+    }
 }
 
 async function baixar() {
