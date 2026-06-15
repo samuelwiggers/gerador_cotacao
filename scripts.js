@@ -127,6 +127,12 @@ function updatePaginaCoberturas() {
     const dias = document.getElementById('carroReservaDias').value.trim();
     document.getElementById('carroReservaPreview').textContent = dias ? `${dias} ` : '';
 
+    const saudacoes = document.getElementById('saudacoes').value.trim();
+    document.getElementById('saudacoesPreview').textContent = saudacoes ? `${saudacoes}` : '';
+
+    const guincho = document.getElementById('guincho').value.trim();
+    document.getElementById('guinchoPreview').textContent = guincho ? ` ${guincho}` : '';
+
     setPreviewValor('franquiaPreview', document.getElementById('franquia').value);
 
     const seguradoraCotacao = document.getElementById('seguradoraCotacao').value.trim();
@@ -233,15 +239,9 @@ function aplicarMelhorCotacao({ todosPreenchidos, melhorNome, melhorValor }) {
 
 function update() {
     const cliente = document.getElementById('cliente').value || 'Cliente';
-    const mensagem = document.getElementById('mensagem').value;
 
     document.querySelectorAll('.cliente-preview').forEach(el => {
         el.innerText = cliente;
-    });
-
-    document.querySelectorAll('.mensagem-preview').forEach(el => {
-        el.textContent = mensagem;
-        el.hidden = !mensagem.trim();
     });
 
     const tbody = document.getElementById('tbody');

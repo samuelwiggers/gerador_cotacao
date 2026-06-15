@@ -15,7 +15,8 @@
 
             <input type="file" id="logoInput" accept="image/*" disabled>
             <input type="text" id="cliente" placeholder="Nome do cliente">
-            <textarea id="mensagem" placeholder="Mensagem adicional (página 2)"></textarea>
+            <input type="text" id="saudacoes" placeholder="bom dia/oa tarde">
+
 
             <h3 class="panel-section">Dados do Seguro/Cobertura</h3>
 
@@ -30,6 +31,9 @@
 
             <label class="field-label">Seguro de passageiros</label>
             <input type="text" id="passageiros" class="num-cobertura" placeholder="0,00">
+
+            <label class="field-label">Guincho</label>
+            <input type="text" id="guincho" placeholder="Sem limite de Km livre">
 
             <label class="field-label">Carro reserva (dias)</label>
             <input type="text" id="carroReservaDias" class="num-dias" placeholder="Ex: 15">
@@ -61,7 +65,7 @@
 
                     <div class="content content-coberturas">
                         <p class="texto-apresentacao">
-                            Olá <strong class="cliente-preview">Cliente</strong>👋 muito bom dia/tarde, seu seguro está vencendo. Sua cotação ficou excelente na
+                            Olá <strong class="cliente-preview">Cliente</strong>👋 muito <span id="saudacoesPreview"></span>, seu seguro está vencendo. Sua cotação ficou excelente na
                             <strong id="seguradoraDestaquePreview">Bradesco seguros</strong>.
                             Veja abaixo como ficou o seu seguro.
                         </p>
@@ -73,8 +77,8 @@
                             <li><span class="valor-cob" id="danosCorporaisPreview"></span>Danos corporais a terceiros</li>
                             <li><span class="valor-cob" id="danosMateriaisPreview"></span>Danos Materiais a terceiros</li>
                             <li><span class="valor-cob" id="passageirosPreview"></span>Seguro de passageiros</li>
-                            <li>Guincho Sem limite de Km livre</li>
-                            <li>Vidros , Faróis , lanternas e retrovisores</li>
+                            <li>Guincho<span id="guinchoPreview"></span></li>
+                            <li>Vidros, Faróis, lanternas e retrovisores</li>
                             <li>Carro reserva <span class="valor-cob" id="carroReservaPreview"></span> dias</li>
                             <li>Pequenos reparos</li>
                             <li>Franquia reduzida R$ <span class="valor-cob" id="franquiaPreview"></span></li>
@@ -95,8 +99,6 @@
 
                     <div class="content">
                         <h1>Comparativo de Preços</h1>
-
-                        <p class="mensagem-preview"></p>
 
                         <table>
                             <thead>
